@@ -1,5 +1,5 @@
 var mongoose= require("mongoose");
-var task = mongoose.model("Task", {
+var schema = mongoose.Schema({
   task:{
     type:String,
     require:true,
@@ -11,6 +11,16 @@ var task = mongoose.model("Task", {
     default:false
   },
   date: Date,
-})
+  owner:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        require:true
+  }
+});
+schema.pre('save',   function(next ){
+     var task = this;
+     next();
+});
+var task = mongoose.model("Task", schema);
 
 module.exports=task

@@ -1,4 +1,6 @@
 var express= require("express");
+var bcrypt = require('bcryptjs');
+
 var app= express();
 require("../db/mongoose.js");
 var user = require("../models/user")
