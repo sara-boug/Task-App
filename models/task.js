@@ -16,7 +16,7 @@ var schema = mongoose.Schema({
         ref:"User",
         require:true
   }
-});
+},{  timestamps :true });
 schema.pre('save',   function(next ){
      var task = this;
      next();

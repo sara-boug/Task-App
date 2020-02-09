@@ -51,7 +51,7 @@ var userSchema = mongoose.Schema( {
       required:true
     }
   }]
-})
+},{  timestamps :true })
 userSchema.virtual("task" ,{
   ref:"Task",
   localField:"_id",

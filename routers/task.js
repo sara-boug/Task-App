@@ -18,14 +18,34 @@ router.post("/tasks", auth ,async (req,res) =>{
 
   }
 });
-
+//sort=createAt:desc
 
 router.get("/tasks",auth, async (req,res) => {
+  var match ={};
+  var sort= {};
+  if(req.query.accomplished) {
+    match.accomplished =req.query.accomplished==='true';
+  }
+  if(req.query.sort) {
+    var part = req.query.sort.split(":");
+    sort[part[0]] = part[1] ==="desc"? -1:1;
+  }
+
   try{
-    var tasks= await task.find({owner:req.user}) ;
-    res.send(tasks)
+    await   req.user.populate({
+      path:'task',
+      match,
+      options: {
+        limit: parseInt(req.query.limit),
+        skip:parseInt(req.query.skip),
+        sort
+
+      }
+    }).execPopulate();
+    res.send(req.user.task)
 
   } catch(error) {
+    console.log(error);
     res.status(500).send(error);
   }
 });
@@ -33,7 +53,7 @@ router.get("/tasks",auth, async (req,res) => {
 router.get("/tasks/:id",  auth,async (req, res) => {
   try {
     var one_task=  await task.findById({_id:req.params.id ,
-        owner:req.user
+      owner:req.user
     })
     if(!one_task){
       return res.status(404).send();
@@ -47,7 +67,7 @@ router.get("/tasks/:id",  auth,async (req, res) => {
   }
 });
 router.patch("/tasks/:id",  auth,async(req, res) => {
-   var inputs = Object.keys(req.body);
+  var inputs = Object.keys(req.body);
   var allowedInput=["accomplished" , "task", "date"];
   var allowed= inputs.every((input) => {
     return  allowedInput.includes(input);
@@ -57,34 +77,34 @@ router.patch("/tasks/:id",  auth,async(req, res) => {
   }
   try {
     var Task= await task.findOne({ _id: req.params.id ,
-       owner: req.user });
-     inputs.forEach((input) => {
+      owner: req.user });
+      inputs.forEach((input) => {
 
-      Task[input] = req.body[input]
-    });
-    await Task.save();
-    if(!Task) {
-      return res.status(404).send();
+        Task[input] = req.body[input]
+      });
+      await Task.save();
+      if(!Task) {
+        return res.status(404).send();
 
+      }
+      res.send(Task);
+
+    }catch(error) {
+      res.status(500).send(error);
     }
-    res.send(Task);
+  });
+  router.delete("/tasks/:id", auth ,async (req, res) => {
+    try {
+      var Task = await task.findOneAndDelete({_id:req.params.id,
+        owner:req.user });
+        if(!Task) {
+          return  res.status(404).send();
+        }
+        res.send(Task);
+      } catch(error){
+        res.status(500). send(error)
+      }
 
-  }catch(error) {
-    res.status(500).send(error);
-  }
-});
-router.delete("/tasks/:id", auth ,async (req, res) => {
-  try {
-    var Task = await task.findOneAndDelete({_id:req.params.id,
-         owner:req.user });
-    if(!Task) {
-      return  res.status(404).send();
-    }
-    res.send(Task);
-  } catch(error){
-    res.status(500). send(error)
-  }
+    })
 
-})
-
-module.exports=router;
+    module.exports=router;
