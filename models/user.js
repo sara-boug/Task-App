@@ -31,7 +31,10 @@ var userSchema = mongoose.Schema( {
     }
   },
   //avoid modifying the password formats lower case should not be set to true  else the hashing would be wrong
-
+  avatar: {
+     type: Buffer,
+     required:false
+  },
   password: {
     type:String,
     $size:220,
@@ -50,7 +53,8 @@ var userSchema = mongoose.Schema( {
       type:String,
       required:true
     }
-  }]
+  }],
+
 },{  timestamps :true })
 userSchema.virtual("task" ,{
   ref:"Task",
@@ -94,10 +98,11 @@ userSchema.methods.GenerateToken= async function() {
 
 }
 // in order to hide important findByCredentials
-userSchema.methods.toJson = function() {
+userSchema.methods.toJSON= function() {
   var userObject = this.toObject();
   delete userObject.password;
   delete userObject.tokens;
+  delete userObject.avatar;
   return userObject;
 }
 
