@@ -1,10 +1,10 @@
 var jwt = require("jsonwebtoken");
-var  user= require("../models/user")
+var  user= require("../models/user");
 var auth=async  (req, res , next) => {
   try {
 
       var token = req.header("Authorization").replace("Bearer " ,"") ;
-      var verify= jwt.verify(token, "jsonwebtoken");
+      var verify= jwt.verify(token, process.env.JSONWEBTOKEN);
       var User = await user.findOne({_id:verify._id , "tokens.token" :token});
       if(!User) {
          throw Error();
@@ -13,7 +13,6 @@ var auth=async  (req, res , next) => {
        req.user=User;
       next();
 }catch(error) {
-  console.log(error);
    res.status(500).send({error :"authentificate please !!"})
 }
 }

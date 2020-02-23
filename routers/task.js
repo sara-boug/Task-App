@@ -1,7 +1,7 @@
 var express= require("express");
 var router= new express.Router();
 var task =require("../models/task");
-var auth = require("../middleware/auth.js")
+var auth = require("../middleware/auth.js");
 
 router.post("/tasks", auth ,async (req,res) =>{
 
@@ -11,6 +11,7 @@ router.post("/tasks", auth ,async (req,res) =>{
       owner:req.user
     });
     await  Task.save();
+
     res.status(200).send(Task);
 
   }catch(error) {

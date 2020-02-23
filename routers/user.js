@@ -4,6 +4,8 @@ var user = require("../models/user")
 var auth= require("../middleware/auth")
 var multer= require("multer");
 var sharp = require("sharp");
+var { sendWelcomeMail, sendGoodByeMail} = require("../src/account.js");
+
 var upload = multer({
   limits:{
     fileSize:1000000
@@ -14,11 +16,13 @@ var upload = multer({
     }
     callback(undefined, true);
   }
-})
+});
+
 router.post("/users", async (req, res)=>{
   var User= new user(req.body);
   try{
     await User.save();
+    sendWelcomeMail(User.email, User.name);
     var token =await User.GenerateToken();
     res.status(200).send({user:User , token:token})
   }  catch(error){
@@ -76,7 +80,8 @@ router.get("/users/me",auth, async (req,res) => {
 
 router.delete("/users/me/avatar", auth , upload.single("upload"), async(req,res) => {
   req.user.avatar= undefined;
-  await   req.user.save();
+  await req.user.save();
+
   res.send();
 });
 
@@ -97,8 +102,10 @@ router.get("/users/:id/avatar", async (req, res) => {
 })
 router.delete("/users/me" , auth, async (req, res) => {
   try {
-    await req.user.remove() ;
+    sendGoodByeMail(req.user.email, req.user.name);
+    await req.user.remove();
     res.send(user);
+
   }catch(error) {
     console.log(error);
     res.status(500).send();

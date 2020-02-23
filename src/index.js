@@ -7,7 +7,7 @@ var user = require("../models/user")
 var task=require("../models/task")
 var user_routs= require("../routers/user")
 var task_routs= require("../routers/task")
-var port= process.env.PORT|| 3000;
+var port= process.env.PORT;
 
 app.use(express.json())
 app.use(user_routs);

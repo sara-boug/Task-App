@@ -1,6 +1,6 @@
 var mongoose= require("mongoose");
 
-mongoose.connect("mongodb://localhost:27017/Task_App", {
+mongoose.connect(process.env.DB_UR, {
   useNewUrlParser:true,
   useCreateIndex:true,
   useUnifiedTopology: true
