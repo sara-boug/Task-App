@@ -76,8 +76,6 @@ router.get("/users/me",auth, async (req,res) => {
   res.send(req.user);
 });
 
-
-
 router.delete("/users/me/avatar", auth , upload.single("upload"), async(req,res) => {
   req.user.avatar= undefined;
   await req.user.save();
@@ -103,8 +101,8 @@ router.get("/users/:id/avatar", async (req, res) => {
 router.delete("/users/me" , auth, async (req, res) => {
   try {
     sendGoodByeMail(req.user.email, req.user.name);
-    await req.user.remove();
-    res.send(user);
+   var User=    await req.user.remove();
+    res.send(User);
 
   }catch(error) {
     console.log(error);
