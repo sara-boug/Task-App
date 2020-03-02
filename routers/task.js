@@ -46,7 +46,6 @@ router.get("/tasks",auth, async (req,res) => {
     res.send(req.user.task)
 
   } catch(error) {
-    console.log(error);
     res.status(500).send(error);
   }
 });
@@ -61,10 +60,8 @@ router.get("/tasks/:id",  auth,async (req, res) => {
     }
     var result =await task.countDocuments({});
     res.send(one_task);
-
-  } catch(error) {
+   } catch(error) {
     res.status(500).send(error);
-
   }
 });
 router.patch("/tasks/:id",  auth,async(req, res) => {
